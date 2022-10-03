@@ -7,7 +7,7 @@ namespace NPMTK
     {
 
 
-        public async Task CreateTableAsync(string connectionString)
+        public static async Task CreateTableAsync(string connectionString)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -21,16 +21,11 @@ namespace NPMTK
             }
         }
 
-        public async Task AddToTableAsync(string connectionString)
+        public static async Task AddToTableAsync(string connectionString, string FIO, string Date, string Sex)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                Console.WriteLine("Введите ФИО:");
-                string? FIO = Console.ReadLine();
-                Console.WriteLine("Введите возраст:");
-                int Date = Int32.Parse(Console.ReadLine());
-                Console.WriteLine("Введите возраст:");
-                string? Sex = Console.ReadLine();
+               
                 string sqlExpression = $"INSERT INTO Users (FIO, Date, Sex) VALUES ({FIO}, {Date}, {Sex})";
                 await connection.OpenAsync();
                 SqlCommand command = new SqlCommand(sqlExpression, connection);
@@ -40,7 +35,7 @@ namespace NPMTK
             Console.Read();
         }
 
-        public async Task SortUnicValuesTabeAsync(string connectionString)
+        public static async Task SortUnicValuesTabeAsync(string connectionString)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -70,14 +65,21 @@ namespace NPMTK
             Console.Read();
         }
 
-        public async Task AddToTable100500ValuesAsync(string connectionString)
+        public static async Task AddToTable100500ValuesAsync(string connectionString)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string? FIO = Console.ReadLine();
-                int Date = Int32.Parse(Console.ReadLine());
-                string? Sex = Console.ReadLine();
-                string sqlExpression = $"INSERT INTO Users (FIO, Date, Sex) VALUES (Fanar Abab Baba, 2022-10-10, man),(Jafna Huafna Dudu, 2022-10-10, not), (Call Me Peep, 2022-10-10, man)";
+                string sqlExpression = "INSERT INTO Users (FIO, Date, Sex) VALUES " +
+                    "(Fanar Abab Baba, 2022-10-10, man)," +
+                    "(Jafna Huafna Dudu, 2022-10-10, not), " +
+                    "(Call Me Peep, 2022-10-10, man)" +
+                    "(Call Me Gay, 2022-10-10, man)" +
+                    "(Call Me Qeep, 2022-10-10, man)" +
+                    "(Call Me Seep, 2022-10-10, man)" +
+                    "(Call Me Reep, 2022-10-10, man)" +
+                    "(Call Me Deep, 2022-10-10, man)" +
+                    "(Call Me Ceep, 2022-10-10, man)" +
+                    "(Call Me Teep, 2022-10-10, man)";
                 await connection.OpenAsync();
                 SqlCommand command = new SqlCommand(sqlExpression, connection);
                 int number = await command.ExecuteNonQueryAsync();
@@ -86,10 +88,62 @@ namespace NPMTK
                 number += await command.ExecuteNonQueryAsync();
                 Console.WriteLine($"Добавлено объектов: {number}");
             }
-            Console.Read();
+                Console.Read();
+     }
+
+        public static async Task SelectorAsync(string connectionString)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                var startTime = System.Diagnostics.Stopwatch.StartNew();
+
+                string sqlExpression = "SELECT Sex, FIO  FROM Users WHERE Sex='man' and FIO LIKE 'F%';";
+                await connection.OpenAsync();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+                startTime.Stop();
+                var resultTime = startTime.Elapsed;
+                Console.WriteLine(String.Format("{0:00}:{1:00}", resultTime.Minutes, resultTime.Seconds));
+                Console.WriteLine();
+                if (reader.HasRows)
+                {
+                    string columnName1 = reader.GetName(0);
+                    string columnName2 = reader.GetName(1);
+
+                    Console.WriteLine($"{columnName1}\t{columnName2}");
+
+                    while (await reader.ReadAsync())
+                    {
+                        object Sex = reader.GetValue(0);
+                        object FIO = reader.GetValue(1);
+                        Console.WriteLine($" \t{Sex} \t{FIO}");
+                    }
+                }
+
+                await reader.CloseAsync();
+
+            }
         }
 
-    }
+
+        public static async Task TableIndexiser(string connectionString)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlExpression = "CREATE INDEX MyIndex ON Users;";
+                await connection.OpenAsync();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                }
+
+            }
+        }
+
+
+        
 
     }
+
+    
 
